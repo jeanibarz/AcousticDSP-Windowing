@@ -23,6 +23,8 @@ Windowing::Windowing(QWidget *parent) :
     m_sSettingsFile = QApplication::applicationDirPath() + "/settings.ini";
     if (QFile::exists(m_sSettingsFile)) loadSettings();
     else saveSettings();
+
+    ui->importImpulsePushButton->setFocus();
 }
 
 Windowing::~Windowing()
@@ -190,8 +192,6 @@ void Windowing::on_wLeftSideWidthValue_valueChanged(int arg1)
     else
         ui->wLeftSideWidthUnit->setText(tr("samples"));
 
-    ui->wLeftSideWidthSlider->setValue(arg1);
-
     if (ui->trTypeComboBox->currentIndex() == 0)
         updateTrWindowIndexes();
 }
@@ -207,8 +207,6 @@ void Windowing::on_wRightSideWidthValue_valueChanged(int arg1)
         ui->wRightSideWidthUnit->setText(tr("sample"));
     else
         ui->wRightSideWidthUnit->setText(tr("samples"));
-
-    ui->wRightSideWidthSlider->setValue(arg1);
 
     // Update truncation indexes if truncation type is "window"
     if (ui->trTypeComboBox->currentIndex() == 0)

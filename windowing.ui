@@ -10,14 +10,23 @@
     <x>0</x>
     <y>0</y>
     <width>486</width>
-    <height>814</height>
+    <height>678</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>492</width>
+    <height>678</height>
+   </size>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Windowing</string>
@@ -25,8 +34,17 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QPushButton" name="importImpulsePushButton">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>Import impulse</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -107,6 +125,9 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
@@ -131,6 +152,9 @@
           <width>60</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -157,6 +181,9 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
@@ -166,34 +193,17 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLabel" name="sSignalLengthUnit">
-          <property name="minimumSize">
-           <size>
-            <width>45</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>sample</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
+       <widget class="QLabel" name="sSignalLengthUnit">
+        <property name="minimumSize">
+         <size>
+          <width>45</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>sample</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -277,6 +287,9 @@
            </property>
            <property name="text">
             <string>Width :</string>
+           </property>
+           <property name="buddy">
+            <cstring>wLeftSideWidthValue</cstring>
            </property>
           </widget>
          </item>
@@ -366,12 +379,18 @@
            <property name="text">
             <string>Type :</string>
            </property>
+           <property name="buddy">
+            <cstring>wLeftSideTypeComboBox</cstring>
+           </property>
           </widget>
          </item>
          <item row="2" column="1">
           <widget class="QSlider" name="wLeftSideWidthSlider">
            <property name="enabled">
             <bool>false</bool>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
            </property>
            <property name="sliderPosition">
             <number>99</number>
@@ -410,14 +429,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>16777215</height>
-            </size>
-           </property>
            <property name="text">
             <string>Width :</string>
+           </property>
+           <property name="buddy">
+            <cstring>wRightSideWidthValue</cstring>
            </property>
           </widget>
          </item>
@@ -470,6 +486,9 @@
            </property>
            <property name="text">
             <string>Type :</string>
+           </property>
+           <property name="buddy">
+            <cstring>wRightSideTypeComboBox</cstring>
            </property>
           </widget>
          </item>
@@ -547,6 +566,9 @@
            <property name="enabled">
             <bool>false</bool>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
            <property name="sliderPosition">
             <number>99</number>
            </property>
@@ -584,53 +606,19 @@
         <property name="text">
          <string>Offset :</string>
         </property>
+        <property name="buddy">
+         <cstring>tOffsetValue</cstring>
+        </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>Auto detection :</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <item>
-         <widget class="QSpinBox" name="tOffsetValue">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="wTimeOffsetUnit">
-          <property name="minimumSize">
-           <size>
-            <width>45</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>sample</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="1">
+      <item row="3" column="1">
        <widget class="QComboBox" name="tAutoDetectComboBox">
         <property name="enabled">
          <bool>false</bool>
@@ -653,7 +641,7 @@
         </item>
        </widget>
       </item>
-      <item row="1" column="2">
+      <item row="3" column="2">
        <widget class="QPushButton" name="tAutoDetectPushButton">
         <property name="enabled">
          <bool>false</bool>
@@ -669,7 +657,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="3">
+      <item row="3" column="3">
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -681,6 +669,26 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="tOffsetValue">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="wTimeOffsetUnit">
+        <property name="minimumSize">
+         <size>
+          <width>45</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>sample</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -696,11 +704,17 @@
      <property name="title">
       <string>Truncation</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0,0">
+      <property name="verticalSpacing">
+       <number>6</number>
+      </property>
       <item row="4" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
          <string>End index :</string>
+        </property>
+        <property name="buddy">
+         <cstring>trEndIndexValue</cstring>
         </property>
        </widget>
       </item>
@@ -709,12 +723,18 @@
         <property name="text">
          <string>Type :</string>
         </property>
+        <property name="buddy">
+         <cstring>trTypeComboBox</cstring>
+        </property>
        </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_7">
         <property name="text">
          <string>Start index :</string>
+        </property>
+        <property name="buddy">
+         <cstring>trStartIndexValue</cstring>
         </property>
        </widget>
       </item>
@@ -723,10 +743,22 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
-          <width>80</width>
+          <width>0</width>
           <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
          </size>
         </property>
         <item>
@@ -741,64 +773,30 @@
         </item>
        </widget>
       </item>
-      <item row="2" column="4">
-       <spacer name="horizontalSpacer_5">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="5" column="0">
        <widget class="QLabel" name="label_9">
         <property name="text">
          <string>Signal length :</string>
         </property>
+        <property name="buddy">
+         <cstring>trSignalLengthValue</cstring>
+        </property>
        </widget>
-      </item>
-      <item row="5" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <widget class="QLineEdit" name="trSignalLengthValue">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>70</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="trSignalLengthUnit">
-          <property name="text">
-           <string>sample</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
       <item row="3" column="1">
        <widget class="QSpinBox" name="trStartIndexValue">
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="maximumSize">
          <size>
-          <width>70</width>
+          <width>80</width>
           <height>16777215</height>
          </size>
         </property>
@@ -812,9 +810,15 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="maximumSize">
          <size>
-          <width>70</width>
+          <width>80</width>
           <height>16777215</height>
          </size>
         </property>
@@ -829,6 +833,54 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="4">
+       <widget class="QLabel" name="trSignalLengthUnit">
+        <property name="text">
+         <string>sample</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="trSignalLengthValue">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>80</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </widget>
    </item>
@@ -837,7 +889,7 @@
      <item>
       <widget class="QPushButton" name="plottingPushButton">
        <property name="text">
-        <string>Plotting</string>
+        <string>Plot</string>
        </property>
       </widget>
      </item>
@@ -863,6 +915,21 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>importImpulsePushButton</tabstop>
+  <tabstop>wLeftSideTypeComboBox</tabstop>
+  <tabstop>wRightSideTypeComboBox</tabstop>
+  <tabstop>wLeftSideWidthValue</tabstop>
+  <tabstop>wRightSideWidthValue</tabstop>
+  <tabstop>tAutoDetectComboBox</tabstop>
+  <tabstop>tAutoDetectPushButton</tabstop>
+  <tabstop>trTypeComboBox</tabstop>
+  <tabstop>trStartIndexValue</tabstop>
+  <tabstop>trEndIndexValue</tabstop>
+  <tabstop>plottingPushButton</tabstop>
+  <tabstop>exportImpulsePushButton</tabstop>
+  <tabstop>cancelPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -926,6 +993,22 @@
     <hint type="destinationlabel">
      <x>334</x>
      <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Windowing</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>397</x>
+     <y>653</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>501</x>
+     <y>675</y>
     </hint>
    </hints>
   </connection>
