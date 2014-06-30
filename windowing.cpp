@@ -60,7 +60,16 @@ void Windowing::on_importImpulsePushButton_clicked()
     tr("Import impulse"), m_importDirectory,
     tr("Text files (*.txt)"));
     if (!fileName.isEmpty())
-        loadFile(fileName);
+    {
+        if(loadFile(fileName)) {
+            // Signal has been successfully imported, auto detect offset
+            on_tAutoDetectPushButton_clicked();
+
+
+
+            updateSignal();
+        }
+    }
 }
 
 bool Windowing::loadFile(const QString &fileName)
@@ -74,7 +83,6 @@ bool Windowing::loadFile(const QString &fileName)
         return false;
     }
 
-    updateSignal();
     QMessageBox::information(this, tr("Success !"), tr("Impulse successfully imported !"));
     //statusBar()->showMessage(tr("File loaded"), 2000);*/
     return true;
@@ -106,6 +114,7 @@ bool Windowing::readFile(const QString &fileName)
         if (!ok)
         {
             QMessageBox::critical(this, tr("Error !"), tr("Error importing impulse : parsing line number ") + QString::number(iLine) + tr(" failed !"));
+            impulse.clear();
             return false;
         }
         else
@@ -184,9 +193,7 @@ void Windowing::on_wLeftSideWidthValue_valueChanged(int arg1)
     ui->wLeftSideWidthSlider->setValue(arg1);
 
     if (ui->trTypeComboBox->currentIndex() == 0)
-    {
         updateTrWindowIndexes();
-    }
 }
 
 void Windowing::on_wLeftSideWidthSlider_valueChanged(int value)
@@ -203,10 +210,9 @@ void Windowing::on_wRightSideWidthValue_valueChanged(int arg1)
 
     ui->wRightSideWidthSlider->setValue(arg1);
 
+    // Update truncation indexes if truncation type is "window"
     if (ui->trTypeComboBox->currentIndex() == 0)
-    {
         updateTrWindowIndexes();
-    }
 }
 
 void Windowing::on_wRightSideWidthSlider_valueChanged(int value)
@@ -214,17 +220,17 @@ void Windowing::on_wRightSideWidthSlider_valueChanged(int value)
     ui->wRightSideWidthValue->setValue(value);
 }
 
-void Windowing::on_tOffsetValue_valueChanged(int arg1)
+void Windowing::on_tOffsetValue_valueChanged(int offset)
 {
-    int sLength = impulse.size();
+    int iMax = impulse.size() - 1;
 
-    ui->wLeftSideWidthValue->setMaximum(arg1);
-    ui->wLeftSideWidthSlider->setMaximum(arg1);
-    ui->wRightSideWidthValue->setMaximum(sLength - 1 - arg1);
-    ui->wRightSideWidthSlider->setMaximum(sLength - 1 - arg1);
+    ui->wLeftSideWidthValue->setMaximum(offset);
+    ui->wLeftSideWidthSlider->setMaximum(offset);
+    ui->wRightSideWidthValue->setMaximum(iMax - offset);
+    ui->wRightSideWidthSlider->setMaximum(iMax - offset);
 
-    ui->wLeftSideWidthValue->setValue(arg1);
-    ui->wRightSideWidthValue->setValue(sLength - 1 - arg1);
+    ui->wLeftSideWidthValue->setValue(offset);
+    ui->wRightSideWidthValue->setValue(iMax - offset);
 }
 
 void Windowing::on_tAutoDetectPushButton_clicked()
@@ -266,8 +272,6 @@ void Windowing::on_tAutoDetectPushButton_clicked()
     };
 
     ui->tOffsetValue->setValue(peakIndex);
-    on_tOffsetValue_valueChanged(peakIndex);
-    updateTrWindowIndexes();
 }
 
 void Windowing::on_trStartIndexValue_valueChanged(int arg1)
@@ -284,17 +288,18 @@ void Windowing::on_trEndIndexValue_valueChanged(int arg1)
 
 void Windowing::update_trSignalLengthValue()
 {
-    int trSignalLength = 1 + ui->trEndIndexValue->value() - ui->trStartIndexValue->value();
+    // Calculus of truncated signal length
+    int trSignalLength = ui->trEndIndexValue->value() - ui->trStartIndexValue->value() + 1;
+
+    // Disable export impulse push button if truncated signal length <= 0
     if (trSignalLength <= 0)
-    {
         ui->exportImpulsePushButton->setEnabled(false);
-        ui->trSignalLengthValue->setText(QString::number(trSignalLength));
-    }
+    // Enable export impulse push button if truncated signal length > 0
     else
-    {
         ui->exportImpulsePushButton->setEnabled(true);
-        ui->trSignalLengthValue->setText(QString::number(trSignalLength));
-    }
+
+    // Write truncated signal length to label
+    ui->trSignalLengthValue->setText(QString::number(trSignalLength));
 }
 
 void Windowing::on_trSignalLengthValue_textChanged(const QString &arg1)
@@ -307,12 +312,18 @@ void Windowing::on_trSignalLengthValue_textChanged(const QString &arg1)
 
 void Windowing::updateTrWindowIndexes()
 {
-    ui->trStartIndexValue->setMaximum(impulse.size()-1);
-    ui->trEndIndexValue->setMinimum(0);
+    int iMax = impulse.count() - 1;
+    int offset = ui->tOffsetValue->value();
+    int startIndex = offset - ui->wLeftSideWidthValue->value();
+    int endIndex = offset + ui->wRightSideWidthValue->value();
 
-    ui->trEndIndexValue->setValue(ui->tOffsetValue->value() + ui->wRightSideWidthValue->value());
-    ui->trStartIndexValue->setValue(ui->tOffsetValue->value() - ui->wLeftSideWidthValue->value());
-    update_trSignalLengthValue();
+    ui->trStartIndexValue->setMinimum(0);
+    ui->trStartIndexValue->setMaximum(iMax);
+    ui->trEndIndexValue->setMinimum(0);
+    ui->trEndIndexValue->setMaximum(iMax);
+
+    ui->trStartIndexValue->setValue(startIndex);
+    ui->trEndIndexValue->setValue(endIndex);
 }
 
 void Windowing::on_trTypeComboBox_currentIndexChanged(int index)

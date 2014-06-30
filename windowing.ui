@@ -864,5 +864,70 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>wLeftSideWidthValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>wLeftSideWidthSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>130</x>
+     <y>283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>wLeftSideWidthSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>wLeftSideWidthValue</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>201</x>
+     <y>313</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>137</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>wRightSideWidthSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>wRightSideWidthValue</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>356</x>
+     <y>312</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>358</x>
+     <y>289</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>wRightSideWidthValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>wRightSideWidthSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>279</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>334</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
