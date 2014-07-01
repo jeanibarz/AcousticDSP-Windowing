@@ -60,7 +60,7 @@
         <location filename="../windowing.cpp" line="207"/>
         <location filename="../windowing.cpp" line="308"/>
         <source>sample</source>
-        <translation></translation>
+        <translation>coefficient</translation>
     </message>
     <message>
         <location filename="../windowing.ui" line="226"/>
