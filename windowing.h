@@ -53,16 +53,23 @@ private slots:
 
     bool writeFile(const QString &fileName);
 
+    double getWindowCoefficient(int windowType, int i, int width);
+
     double sumOfCosine(double n, double k, double a0 = 0, double a1 = 0, double a2 = 0, double a3 = 0, double a4 = 0);
 
     void on_wLeftSideTypeComboBox_currentIndexChanged(int index);
 
     void on_wRightSideTypeComboBox_currentIndexChanged(int index);
 
+    void updateWindow();
+
+    void updateWinImpulse();
+
     void on_plottingPushButton_clicked();
 
 private:
     QVector<double> impulse;
+    QVector<double> window;
     QVector<double> winImpulse;
 
     QString m_sSettingsFile;

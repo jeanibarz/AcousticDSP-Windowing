@@ -16,6 +16,7 @@ Windowing::Windowing(QWidget *parent) :
     ui(new Ui::Windowing)
 {
     impulse = QVector<double>(0);
+    window = QVector<double>(0);
     winImpulse = QVector<double>(0);
 
     ui->setupUi(this);
@@ -64,10 +65,11 @@ void Windowing::on_importImpulsePushButton_clicked()
     if (!fileName.isEmpty())
     {
         if(loadFile(fileName)) {
+            // Refresh plot
+            p.setImpulseData(impulse);
+
             // Signal has been successfully imported, auto detect offset
             on_tAutoDetectPushButton_clicked();
-
-
 
             updateSignal();
         }
@@ -155,6 +157,9 @@ void Windowing::updateSignal()
     ui->sLengthValue->setText(QString::number(length));
 
     on_tAutoDetectPushButton_clicked();
+
+    updateWindow();
+
     //ui->sPeakValue->setText(QString::number(20*std::log10(peak), 'f', 2));
     //ui->sRmsLevelValue->setText(QString::number(20*std::log10(rms), 'f', 2));
 }
@@ -183,6 +188,8 @@ void Windowing::on_sLengthValue_textChanged(const QString &arg1)
 
     on_tAutoDetectPushButton_clicked();
 
+    if (p.isVisible())
+        updateWindow();
 }
 
 void Windowing::on_wLeftSideWidthValue_valueChanged(int arg1)
@@ -194,6 +201,9 @@ void Windowing::on_wLeftSideWidthValue_valueChanged(int arg1)
 
     if (ui->trTypeComboBox->currentIndex() == 0)
         updateTrWindowIndexes();
+
+    if (p.isVisible())
+        updateWindow();
 }
 
 void Windowing::on_wLeftSideWidthSlider_valueChanged(int value)
@@ -211,6 +221,9 @@ void Windowing::on_wRightSideWidthValue_valueChanged(int arg1)
     // Update truncation indexes if truncation type is "window"
     if (ui->trTypeComboBox->currentIndex() == 0)
         updateTrWindowIndexes();
+
+    if (p.isVisible())
+        updateWindow();
 }
 
 void Windowing::on_wRightSideWidthSlider_valueChanged(int value)
@@ -345,183 +358,7 @@ void Windowing::on_trTypeComboBox_currentIndexChanged(int index)
 
 void Windowing::on_exportImpulsePushButton_clicked()
 {
-    winImpulse.clear();
-
-    // Start/end signal indexes
-    int startIndex = ui->trStartIndexValue->value();
-    int endIndex = ui->trEndIndexValue->value();
-
-    // Left side window
-    double width = (double)ui->wLeftSideWidthValue->value();
-    double center = (double)ui->tOffsetValue->value();
-    double n = 0;
-    double L = 2*width;
-    double k = 2*M_PI/L;
-    double value = 0;
-
-    // Left side window applying
-    if (width > 0)
-    {
-        for (int i = startIndex; i < center && i <= endIndex; ++i)
-        {
-            n = width-center+i;
-
-            switch (ui->wLeftSideTypeComboBox->currentIndex())
-            {
-                case 0: // Rectangular
-                    if (i < (center-width))
-                        value = 0;
-                    else
-                        value = 1;
-                    break;
-                case 1: // Bartlett
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = 1.0 + (n-width) / (width+1.0);
-                    break;
-                case 2: // Welch
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = 1.0 - pow((n-width) / (width+1.0), 2.0);
-                    break;
-                case 3: // Hann
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.5, 0.5);
-                    break;
-                case 4: // Hamming
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.54, 0.46);
-                    break;
-                case 5: // Blackman
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.42659, 0.49656, 0.076849);
-                    break;
-                case 6: // Nuttall
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.355768, 0.487396, 0.144232, 0.012604);
-                    break;
-                case 7: // Blackman-Nuttall
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.3635819, 0.4891775, 0.1365995, 0.0106411);
-                    break;
-                case 8: // Blackman-Harris
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.35875, 0.48829, 0.14128, 0.01168);
-                    break;
-                case 9: // Flat top (peak normalized <==> rms attenuation)
-                    if (i < (center - width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 1, 1.93, 1.29, 0.388, 0.028) / 4.636;
-                    break;
-                default:
-                    QMessageBox::critical(this, tr("Error !"), tr("Left window type is invalid ?"));
-                    break;
-            };
-            winImpulse.push_back(impulse[i] * value);
-        }
-    }
-
-    // Center
-    if (center >= startIndex && center <= endIndex)
-        winImpulse.push_back(impulse[center]);
-
-    // Right side window
-    width = (double)ui->wRightSideWidthValue->value();
-    L = 2*width;
-    k = 2*M_PI/L;
-    value = 0;
-
-    // Right side window applying
-    if (width > 0)
-    {
-        for (int i = center+1; i <= endIndex; ++i)
-        {
-            n = width-i+center;
-
-            switch (ui->wRightSideTypeComboBox->currentIndex())
-            {
-                case 0: // Rectangular
-                    if (i > (center+width))
-                        value = 0;
-                    else
-                        value = 1;
-                    break;
-                case 1: // Bartlett
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = 1.0 + (n-width) / (width+1.0);
-                    break;
-                case 2: // Welch
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = 1.0 - pow((n-width) / (width+1.0), 2.0);
-                    break;
-                case 3: // Hann
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.5, 0.5);
-                    break;
-                case 4: // Hamming
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.54, 0.46);
-                    break;
-                case 5: // Blackman
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.42659, 0.49656, 0.076849);
-                    break;
-                case 6: // Nuttall
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.355768, 0.487396, 0.144232, 0.012604);
-                    break;
-                case 7: // Blackman-Nuttall
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.3635819, 0.4891775, 0.1365995, 0.0106411);
-                    break;
-                case 8: // Blackman-Harris
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 0.35875, 0.48829, 0.14128, 0.01168);
-                    break;
-                case 9: // Flat top (peak normalized <==> rms attenuation)
-                    if (i > (center + width))
-                        value = 0;
-                    else
-                        value = sumOfCosine(n, k, 1, 1.93, 1.29, 0.388, 0.028) / 4.636;
-                    break;
-                default:
-                    QMessageBox::critical(this, tr("Error !"), tr("Right window type is invalid ?"));
-                    break;
-            };
-            winImpulse.push_back(impulse[i] * value);
-        }
-    }
+    updateWindow();
 
     QString fileName = QFileDialog::getSaveFileName(this,
     tr("Export impulse"), m_exportDirectory,
@@ -546,7 +383,7 @@ bool Windowing::saveFile(const QString &fileName)
 
 bool Windowing::writeFile(const QString &fileName)
 {
-    if (winImpulse.empty())
+    if (window.empty())
     {
         QMessageBox::critical(this, tr("Error !"), tr("Error writing windowed impulse : windowed impulse is empty !"));
         return false;
@@ -559,7 +396,9 @@ bool Windowing::writeFile(const QString &fileName)
 
     if (!file.isWritable()) return false;
 
-    for (unsigned int i = 0; i < winImpulse.size(); ++i)
+    int length = winImpulse.count();
+
+    for (int i = 0; i < length; ++i)
     {
         out << winImpulse[i] << "\n";
         if (file.error())
@@ -567,6 +406,91 @@ bool Windowing::writeFile(const QString &fileName)
     }
 
     return true;
+}
+
+double Windowing::getWindowCoefficient(int windowType, int i, int width) {
+    // The window coefficient is a half window, starting at index i = 0 (<=> window center) and bounded at index = width (the window generally reach value 0 here)
+
+    if (i < 0) QMessageBox::critical(this, tr("Error !"), tr("Error getting window coefficient : index < 0 !"));
+
+    double k;
+
+    if (width != 0) k = M_PI/(width);
+    else k = 0;
+
+    switch (windowType)
+    {
+        case 0: // Rectangular
+            if (i > width)
+                return 0;
+            else
+                return 1;
+            break;
+        case 1: // Bartlett
+            if (i > width)
+                return 0;
+            else
+                return 1.0 - (i / (width + 1.0));
+            break;
+        case 2: // Welch
+            if (i > width)
+                return 0;
+            else
+                return 1.0 - pow(i / (width + 1.0), 2.0);
+            break;
+        case 3: // Hann
+            if (i > width)
+                return 0;
+            else
+                i = width - i;
+                return sumOfCosine(i, k, 0.5, 0.5);
+            break;
+        case 4: // Hamming
+            if (i > width)
+                return 0;
+            else
+                i = width - i;
+                return sumOfCosine(i, k, 0.54, 0.46);
+            break;
+        case 5: // Blackman
+            if (i > width)
+                return 0;
+            else
+                i = width - i;
+                return sumOfCosine(i, k, 0.42659, 0.49656, 0.076849);
+            break;
+        case 6: // Nuttall
+            if (i > width)
+                return 0;
+            else
+                i = width - i;
+                return sumOfCosine(i, k, 0.355768, 0.487396, 0.144232, 0.012604);
+            break;
+        case 7: // Blackman-Nuttall
+            if (i > width)
+                return 0;
+            else
+                i = width - i;
+                return sumOfCosine(i, k, 0.3635819, 0.4891775, 0.1365995, 0.0106411);
+            break;
+        case 8: // Blackman-Harris
+            if (i > width)
+                return 0;
+            else
+                i = width - i;
+                return sumOfCosine(i, k, 0.35875, 0.48829, 0.14128, 0.01168);
+            break;
+        case 9: // Flat top (peak normalized <==> rms attenuation)
+            if (i > width)
+                return 0;
+            else
+                i = width - i;
+                return sumOfCosine(i, k, 1, 1.93, 1.29, 0.388, 0.028) / 4.636;
+            break;
+        default:
+            QMessageBox::critical(this, tr("Error !"), tr("Left window type is invalid ?"));
+            break;
+    };
 }
 
 double Windowing::sumOfCosine(double n, double k, double a0, double a1, double a2, double a3, double a4)
@@ -578,15 +502,67 @@ double Windowing::sumOfCosine(double n, double k, double a0, double a1, double a
 void Windowing::on_wLeftSideTypeComboBox_currentIndexChanged(int index)
 {
     saveSettings();
+    if (p.isVisible()) updateWindow();
 }
 
 void Windowing::on_wRightSideTypeComboBox_currentIndexChanged(int index)
 {
     saveSettings();
+    if (p.isVisible()) updateWindow();
+}
+
+void Windowing::updateWindow() {
+    int length = impulse.count();
+
+    window = QVector<double>(length); // preallocating winImpulse
+
+    int center = ui->tOffsetValue->value();
+    int leftWidth = ui->wLeftSideWidthValue->value();
+    int rightWidth = ui->wRightSideWidthValue->value();
+
+    int leftType = ui->wLeftSideTypeComboBox->currentIndex();
+    int rightType = ui->wRightSideTypeComboBox->currentIndex();
+
+    int n;
+
+    for (int i = 0; i < length; ++i) {
+        if (i < center) { // left side
+            n = center - i;
+            window[i] = getWindowCoefficient(leftType, n, leftWidth);
+        }
+        else { // right side
+            n = i - center;
+            window[i] = getWindowCoefficient(rightType, n, rightWidth);
+        }
+    }
+
+    updateWinImpulse();
+
+
+}
+
+void Windowing::updateWinImpulse() {
+    int length = impulse.count();
+
+    winImpulse = QVector<double>(length); // preallocating winImpulse
+
+    for (int i = 0; i < length; ++i) {
+        winImpulse[i] = impulse[i] * window[i];
+    }
+
+    if (p.isVisible()) {
+        p.setWindowData(window, false);
+        p.setWinImpulseData(winImpulse);
+    }
 }
 
 void Windowing::on_plottingPushButton_clicked()
 {
-    p.setData(impulse, winImpulse, ui->trStartIndexValue->value(), ui->trEndIndexValue->value());
-    p.show();
+    if (!p.isVisible()) {
+        updateWindow();
+        p.setWindowData(window, false);
+        p.setWinImpulseData(winImpulse);
+        p.show();
+    }
+    else p.close();
 }

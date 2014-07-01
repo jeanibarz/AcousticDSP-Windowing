@@ -9,7 +9,21 @@ Plotting::Plotting(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->plottingWidget->xAxis->setLabel("index");
+    ui->plottingWidget->yAxis->setLabel("amplitude");
+
+    ui->plottingWidget->xAxis->setRange(-1.1, 1.1);
+    ui->plottingWidget->yAxis->setRange(-1.1, 1.1);
+
     ui->plottingWidget->addGraph(); // impulse
+    ui->plottingWidget->graph(0)->setPen(QPen(Qt::blue));
+
+    ui->plottingWidget->addGraph(); // window
+    ui->plottingWidget->graph(1)->setPen(QPen(Qt::red));
+
+    ui->plottingWidget->addGraph(); // winImpulse
+    ui->plottingWidget->graph(2)->setPen(QPen(Qt::green));
+
     ui->plottingWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes);
 
     // connect slot that ties some axis selections together (especially opposite axes):
@@ -24,7 +38,7 @@ Plotting::~Plotting()
     delete ui;
 }
 
-void Plotting::setData(QVector<double> impulse, QVector<double> window, int start, int end) {
+void Plotting::setImpulseData(QVector<double> impulse, bool replot) {
     int length = impulse.count();
     QVector<double> index(length);
     for (int i = 0; i < length; ++i) {
@@ -32,8 +46,7 @@ void Plotting::setData(QVector<double> impulse, QVector<double> window, int star
     }
 
     ui->plottingWidget->graph(0)->setData(index, impulse);
-    ui->plottingWidget->xAxis->setLabel("index");
-    ui->plottingWidget->yAxis->setLabel("amplitude");
+
     // set axes ranges, so we see all data:
     ui->plottingWidget->xAxis->setRange(0, length-1);
     double amplitudeMin = std::numeric_limits<double>::max();
@@ -47,7 +60,32 @@ void Plotting::setData(QVector<double> impulse, QVector<double> window, int star
     }
 
     ui->plottingWidget->yAxis->setRange(amplitudeMin * 1.1, amplitudeMax * 1.1);
-    ui->plottingWidget->replot();
+
+    if (replot) ui->plottingWidget->replot();
+}
+
+void Plotting::setWindowData(QVector<double> window, bool replot) {
+    int length = window.count();
+    QVector<double> index(length);
+    for (int i = 0; i < length; ++i) {
+        index[i] = i;
+    }
+
+    ui->plottingWidget->graph(1)->setData(index, window);
+
+    if (replot) ui->plottingWidget->replot();
+}
+
+void Plotting::setWinImpulseData(QVector<double> winImpulse, bool replot) {
+    int length = winImpulse.count();
+    QVector<double> index(length);
+    for (int i = 0; i < length; ++i) {
+        index[i] = i;
+    }
+
+    ui->plottingWidget->graph(2)->setData(index, winImpulse);
+
+    if (replot) ui->plottingWidget->replot();
 }
 
 void Plotting::selectionChanged()
