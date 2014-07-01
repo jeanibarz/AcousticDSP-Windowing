@@ -24,7 +24,6 @@ HEADERS  += windowing.h \
 FORMS    += windowing.ui \
     plotting.ui
 
-TRANSLATIONS = translations/windowing_en.ts \
-               translations/windowing_fr.ts
+TRANSLATIONS = translations/windowing_fr.ts
 
 RESOURCES += resources.qrc
