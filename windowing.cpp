@@ -442,50 +442,51 @@ double Windowing::getWindowCoefficient(int windowType, int i, int width) {
             if (i > width)
                 return 0;
             else
-                i = width - i;
+                i = i + width;
                 return sumOfCosine(i, k, 0.5, 0.5);
             break;
         case 4: // Hamming
             if (i > width)
                 return 0;
             else
-                i = width - i;
+                i = i + width;
                 return sumOfCosine(i, k, 0.54, 0.46);
             break;
         case 5: // Blackman
             if (i > width)
                 return 0;
             else
-                i = width - i;
-                return sumOfCosine(i, k, 0.42659, 0.49656, 0.076849);
+                i = i + width;
+                //return sumOfCosine(i, k, 0.42659, 0.49656, 0.076849);
+                return sumOfCosine(i, k, 0.42, 0.5, 0.08);
             break;
         case 6: // Nuttall
             if (i > width)
                 return 0;
             else
-                i = width - i;
+                i = i + width;
                 return sumOfCosine(i, k, 0.355768, 0.487396, 0.144232, 0.012604);
             break;
         case 7: // Blackman-Nuttall
             if (i > width)
                 return 0;
             else
-                i = width - i;
+                i = i + width;
                 return sumOfCosine(i, k, 0.3635819, 0.4891775, 0.1365995, 0.0106411);
             break;
         case 8: // Blackman-Harris
             if (i > width)
                 return 0;
             else
-                i = width - i;
+                i = i + width;
                 return sumOfCosine(i, k, 0.35875, 0.48829, 0.14128, 0.01168);
             break;
         case 9: // Flat top (peak normalized <==> rms attenuation)
             if (i > width)
                 return 0;
             else
-                i = width - i;
-                return sumOfCosine(i, k, 1, 1.93, 1.29, 0.388, 0.028) / 4.636;
+                i = i + width;
+                return sumOfCosine(i, k, 1, 1.93, 1.29, 0.388, 0.032) / 4.64;
             break;
         default:
             QMessageBox::critical(this, tr("Error !"), tr("Left window type is invalid ?"));
